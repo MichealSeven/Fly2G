@@ -38,7 +38,7 @@ import rx.Subscription
 import java.lang.ref.SoftReference
 import kotlin.math.min
 
-object V2RayServiceManager {
+object V2RayTestServiceManager {
     private const val NOTIFICATION_ID = 1
     private const val NOTIFICATION_PENDING_INTENT_CONTENT = 0
     private const val NOTIFICATION_PENDING_INTENT_STOP_V2RAY = 1
@@ -67,16 +67,13 @@ object V2RayServiceManager {
     private var mNotificationManager: NotificationManager? = null
 
     fun startV2Ray(context: Context) {
-        if (settingsStorage?.decodeBool(AppConfig.PREF_PROXY_SHARING) == true) {
-            context.toast(R.string.toast_warning_pref_proxysharing_short)
-        }else{
-            context.toast(R.string.toast_services_start)
-        }
-        val intent = if (settingsStorage?.decodeString(AppConfig.PREF_MODE) ?: "VPN" == "VPN") {
-            Intent(context.applicationContext, V2RayVpnService::class.java)
-        } else {
-            Intent(context.applicationContext, V2RayProxyOnlyService::class.java)
-        }
+//        if (settingsStorage?.decodeBool(AppConfig.PREF_PROXY_SHARING) == true) {
+//            context.toast(R.string.toast_warning_pref_proxysharing_short)
+//        }else{
+//            context.toast(R.string.toast_services_start)
+//        }
+        val intent = Intent(context.applicationContext, V2RayTestProxyOnlyService::class.java)
+
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1) {
             context.startForegroundService(intent)
         } else {
@@ -118,7 +115,7 @@ object V2RayServiceManager {
             return try {
                 serviceControl.startService(s)
                 lastQueryTime = System.currentTimeMillis()
-                startSpeedNotification()
+                //startSpeedNotification()
                 0
             } catch (e: Exception) {
                 Log.d(ANG_PACKAGE, e.toString())
@@ -126,6 +123,11 @@ object V2RayServiceManager {
             }
         }
 
+    }
+
+    fun sendMsg2UI( msg : Int) {
+        val service = serviceControl?.get()?.getService() ?: return
+        MessageUtil.sendMsg2UI(service, msg, "")
     }
 
     fun startV2rayPoint() {
@@ -152,7 +154,7 @@ object V2RayServiceManager {
             currentConfig = config
             v2rayPoint.enableLocalDNS = settingsStorage?.decodeBool(AppConfig.PREF_LOCAL_DNS_ENABLED) ?: false
             v2rayPoint.forwardIpv6 = settingsStorage?.decodeBool(AppConfig.PREF_FORWARD_IPV6) ?: false
-            v2rayPoint.proxyOnly = settingsStorage?.decodeString(AppConfig.PREF_MODE) ?: "VPN" != "VPN"
+            v2rayPoint.proxyOnly = true //settingsStorage?.decodeString(AppConfig.PREF_MODE) ?: "VPN" != "VPN"
 
             try {
                 v2rayPoint.runLoop()
@@ -161,11 +163,11 @@ object V2RayServiceManager {
             }
 
             if (v2rayPoint.isRunning) {
-                MessageUtil.sendMsg2UI(service, AppConfig.MSG_STATE_START_SUCCESS, "")
-                showNotification()
+                //MessageUtil.sendMsg2UI(service, AppConfig.MSG_STATE_START_SUCCESS, "")
+                //showNotification()
             } else {
-                MessageUtil.sendMsg2UI(service, AppConfig.MSG_STATE_START_FAILURE, "")
-                cancelNotification()
+                //MessageUtil.sendMsg2UI(service, AppConfig.MSG_STATE_START_FAILURE, "")
+                //cancelNotification()
             }
         }
     }
@@ -183,8 +185,8 @@ object V2RayServiceManager {
             }
         }
 
-        MessageUtil.sendMsg2UI(service, AppConfig.MSG_STATE_STOP_SUCCESS, "")
-        cancelNotification()
+        //MessageUtil.sendMsg2UI(service, AppConfig.MSG_STATE_STOP_SUCCESS, "")
+        //cancelNotification()
 
         try {
             service.unregisterReceiver(mMsgReceive)
@@ -200,9 +202,9 @@ object V2RayServiceManager {
                 AppConfig.MSG_REGISTER_CLIENT -> {
                     //Logger.e("ReceiveMessageHandler", intent?.getIntExtra("key", 0).toString())
                     if (v2rayPoint.isRunning) {
-                        MessageUtil.sendMsg2UI(serviceControl.getService(), AppConfig.MSG_STATE_RUNNING, "")
+                        //MessageUtil.sendMsg2UI(serviceControl.getService(), AppConfig.MSG_STATE_RUNNING, "")
                     } else {
-                        MessageUtil.sendMsg2UI(serviceControl.getService(), AppConfig.MSG_STATE_NOT_RUNNING, "")
+                        //MessageUtil.sendMsg2UI(serviceControl.getService(), AppConfig.MSG_STATE_NOT_RUNNING, "")
                     }
                 }
                 AppConfig.MSG_UNREGISTER_CLIENT -> {
@@ -222,11 +224,11 @@ object V2RayServiceManager {
             when (intent?.action) {
                 Intent.ACTION_SCREEN_OFF -> {
                     Log.d(ANG_PACKAGE, "SCREEN_OFF, stop querying stats")
-                    stopSpeedNotification()
+                    //stopSpeedNotification()
                 }
                 Intent.ACTION_SCREEN_ON -> {
                     Log.d(ANG_PACKAGE, "SCREEN_ON, start querying stats")
-                    startSpeedNotification()
+                    //startSpeedNotification()
                 }
             }
         }

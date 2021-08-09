@@ -11,10 +11,7 @@ import android.view.ViewGroup
 import com.google.gson.Gson
 import com.tencent.mmkv.MMKV
 import com.v2ray.ang.AppConfig
-import com.v2ray.ang.R
-import com.v2ray.ang.databinding.ItemQrcodeBinding
-import com.v2ray.ang.databinding.ItemRecyclerFooterBinding
-import com.v2ray.ang.databinding.ItemRecyclerMainBinding
+import com.v2ray.ang.fly.R
 import com.v2ray.ang.dto.EConfigType
 import com.v2ray.ang.dto.SubscriptionItem
 import com.v2ray.ang.extension.toast
@@ -24,6 +21,8 @@ import com.v2ray.ang.service.V2RayServiceManager
 import com.v2ray.ang.util.AngConfigManager
 import com.v2ray.ang.util.MmkvManager
 import com.v2ray.ang.util.Utils
+import kotlinx.android.synthetic.main.item_qrcode.view.*
+import kotlinx.android.synthetic.main.item_recycler_main.view.*
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import java.util.concurrent.TimeUnit
@@ -42,6 +41,7 @@ class MainRecyclerAdapter(val activity: MainActivity) : RecyclerView.Adapter<Mai
         mActivity.resources.getStringArray(R.array.share_method)
     }
     var isRunning = false
+    var seleHolder : MainViewHolder? = null
 
     override fun getItemCount() = mActivity.mainViewModel.serverList.size + 1
 
@@ -52,34 +52,42 @@ class MainRecyclerAdapter(val activity: MainActivity) : RecyclerView.Adapter<Mai
             val outbound = config.getProxyOutbound()
             val aff = MmkvManager.decodeServerAffiliationInfo(guid)
 
-            holder.itemMainBinding.tvName.text = config.remarks
-            holder.itemMainBinding.btnRadio.isChecked = guid == mainStorage?.decodeString(MmkvManager.KEY_SELECTED_SERVER)
+            holder.name.text = config.remarks
             holder.itemView.setBackgroundColor(Color.TRANSPARENT)
-            holder.itemMainBinding.tvTestResult.text = aff?.getTestDelayString() ?: ""
-            if (aff?.testDelayMillis?:0L < 0L) {
-                holder.itemMainBinding.tvTestResult.setTextColor(ContextCompat.getColor(mActivity, android.R.color.holo_red_dark))
-            } else {
-                holder.itemMainBinding.tvTestResult.setTextColor(ContextCompat.getColor(mActivity, R.color.colorPing))
+            holder.radio.isChecked = guid == mainStorage?.decodeString(MmkvManager.KEY_SELECTED_SERVER)
+            if (holder.radio.isChecked){
+                if (seleHolder != null){
+                    seleHolder!!.radio.isChecked = false
+                    seleHolder!!.itemView.setBackgroundColor(Color.TRANSPARENT)
+                }
+                seleHolder = holder
+                holder.itemView.setBackgroundColor(ContextCompat.getColor(mActivity,R.color.colorPrimary))
             }
-            holder.itemMainBinding.tvSubscription.text = ""
+            holder.test_result.text = aff?.getTestDelayString() ?: ""
+            if (aff?.testDelayMillis?:0L < 0L) {
+                holder.test_result.setTextColor(ContextCompat.getColor(mActivity, android.R.color.holo_red_dark))
+            } else {
+                holder.test_result.setTextColor(ContextCompat.getColor(mActivity, R.color.colorPing))
+            }
+            holder.subscription.text = ""
             val json = subStorage?.decodeString(config.subscriptionId)
             if (!json.isNullOrBlank()) {
                 val sub = Gson().fromJson(json, SubscriptionItem::class.java)
-                holder.itemMainBinding.tvSubscription.text = sub.remarks
+                holder.subscription.text = sub.remarks
             }
 
             var shareOptions = share_method.asList()
             if (config.configType == EConfigType.CUSTOM) {
-                holder.itemMainBinding.tvType.text = mActivity.getString(R.string.server_customize_config)
+                holder.type.text = mActivity.getString(R.string.server_customize_config)
                 shareOptions = shareOptions.takeLast(1)
             } else if (config.configType == EConfigType.VLESS) {
-                holder.itemMainBinding.tvType.text = config.configType.name
+                holder.type.text = config.configType.name
             } else {
-                holder.itemMainBinding.tvType.text = config.configType.name.lowercase()
+                holder.type.text = config.configType.name.toLowerCase()
             }
-            holder.itemMainBinding.tvStatistics.text = "${outbound?.getServerAddress()} : ${outbound?.getServerPort()}"
+            holder.statistics.text = "${outbound?.getServerAddress()} : ${outbound?.getServerPort()}"
 
-            holder.itemMainBinding.layoutShare.setOnClickListener {
+            holder.layout_share.setOnClickListener {
                 AlertDialog.Builder(mActivity).setItems(shareOptions.toTypedArray()) { _, i ->
                     try {
                         when (i) {
@@ -87,9 +95,9 @@ class MainRecyclerAdapter(val activity: MainActivity) : RecyclerView.Adapter<Mai
                                 if (config.configType == EConfigType.CUSTOM) {
                                     shareFullContent(guid)
                                 } else {
-                                    val ivBinding = ItemQrcodeBinding.inflate(LayoutInflater.from(mActivity))
-                                    ivBinding.ivQcode.setImageBitmap(AngConfigManager.share2QRCode(guid))
-                                    AlertDialog.Builder(mActivity).setView(ivBinding.root).show()
+                                    val iv = LayoutInflater.from(mActivity).inflate(R.layout.item_qrcode, null)
+                                    iv.iv_qcode.setImageBitmap(AngConfigManager.share2QRCode(guid))
+                                    AlertDialog.Builder(mActivity).setView(iv).show()
                                 }
                             }
                             1 -> {
@@ -108,7 +116,7 @@ class MainRecyclerAdapter(val activity: MainActivity) : RecyclerView.Adapter<Mai
                 }.show()
             }
 
-            holder.itemMainBinding.layoutEdit.setOnClickListener {
+            holder.layout_edit.setOnClickListener {
                 val intent = Intent().putExtra("guid", guid)
                         .putExtra("isRunning", isRunning)
                 if (config.configType == EConfigType.CUSTOM) {
@@ -117,7 +125,7 @@ class MainRecyclerAdapter(val activity: MainActivity) : RecyclerView.Adapter<Mai
                     mActivity.startActivity(intent.setClass(mActivity, ServerActivity::class.java))
                 }
             }
-            holder.itemMainBinding.layoutRemove.setOnClickListener {
+            holder.layout_remove.setOnClickListener {
                 if (guid != mainStorage?.decodeString(MmkvManager.KEY_SELECTED_SERVER)) {
                     mActivity.mainViewModel.removeServer(guid)
                     notifyItemRemoved(position)
@@ -125,7 +133,7 @@ class MainRecyclerAdapter(val activity: MainActivity) : RecyclerView.Adapter<Mai
                 }
             }
 
-            holder.itemMainBinding.infoContainer.setOnClickListener {
+            holder.infoContainer.setOnClickListener {
                 val selected = mainStorage?.decodeString(MmkvManager.KEY_SELECTED_SERVER)
                 if (guid != selected) {
                     mainStorage?.encode(MmkvManager.KEY_SELECTED_SERVER, guid)
@@ -147,9 +155,9 @@ class MainRecyclerAdapter(val activity: MainActivity) : RecyclerView.Adapter<Mai
         if (holder is FooterViewHolder) {
             //if (activity?.defaultDPreference?.getPrefBoolean(AppConfig.PREF_INAPP_BUY_IS_PREMIUM, false)) {
             if (true) {
-                holder.itemFooterBinding.layoutEdit.visibility = View.INVISIBLE
+                holder.layout_edit.visibility = View.INVISIBLE
             } else {
-                holder.itemFooterBinding.layoutEdit.setOnClickListener {
+                holder.layout_edit.setOnClickListener {
                     Utils.openUri(mActivity, "${Utils.decode(AppConfig.promotionUrl)}?t=${System.currentTimeMillis()}")
                 }
             }
@@ -167,9 +175,11 @@ class MainRecyclerAdapter(val activity: MainActivity) : RecyclerView.Adapter<Mai
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         return when (viewType) {
             VIEW_TYPE_ITEM ->
-                MainViewHolder(ItemRecyclerMainBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+                MainViewHolder(LayoutInflater.from(parent.context)
+                        .inflate(R.layout.item_recycler_main, parent, false))
             else ->
-                FooterViewHolder(ItemRecyclerFooterBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+                FooterViewHolder(LayoutInflater.from(parent.context)
+                        .inflate(R.layout.item_recycler_footer, parent, false))
         }
     }
 
@@ -181,21 +191,40 @@ class MainRecyclerAdapter(val activity: MainActivity) : RecyclerView.Adapter<Mai
         }
     }
 
-    open class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun onItemSelected() {
+    open class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+
+    class MainViewHolder(itemView: View) : BaseViewHolder(itemView), ItemTouchHelperViewHolder {
+        val subscription = itemView.tv_subscription!!
+        val radio = itemView.btn_radio!!
+        val name = itemView.tv_name!!
+        val test_result = itemView.tv_test_result!!
+        val type = itemView.tv_type!!
+        val statistics = itemView.tv_statistics!!
+        val infoContainer = itemView.info_container!!
+        val layout_edit = itemView.layout_edit!!
+        val layout_share = itemView.layout_share
+        val layout_remove = itemView.layout_remove!!
+
+        override fun onItemSelected() {
             itemView.setBackgroundColor(Color.LTGRAY)
         }
 
-        fun onItemClear() {
+        override fun onItemClear() {
             itemView.setBackgroundColor(0)
         }
     }
 
-    class MainViewHolder(val itemMainBinding: ItemRecyclerMainBinding) :
-            BaseViewHolder(itemMainBinding.root), ItemTouchHelperViewHolder
+    class FooterViewHolder(itemView: View) : BaseViewHolder(itemView), ItemTouchHelperViewHolder {
+        val layout_edit = itemView.layout_edit!!
 
-    class FooterViewHolder(val itemFooterBinding: ItemRecyclerFooterBinding) :
-            BaseViewHolder(itemFooterBinding.root), ItemTouchHelperViewHolder
+        override fun onItemSelected() {
+            itemView.setBackgroundColor(Color.LTGRAY)
+        }
+
+        override fun onItemClear() {
+            itemView.setBackgroundColor(0)
+        }
+    }
 
     override fun onItemDismiss(position: Int) {
         val guid = mActivity.mainViewModel.serverList.getOrNull(position) ?: return

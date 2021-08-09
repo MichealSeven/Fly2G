@@ -7,11 +7,12 @@ import android.text.method.ScrollingMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.core.content.ContextCompat
 import com.v2ray.ang.AppConfig.ANG_PACKAGE
-import com.v2ray.ang.R
-import com.v2ray.ang.databinding.ActivityLogcatBinding
+import com.v2ray.ang.fly.R
 import com.v2ray.ang.extension.toast
 import com.v2ray.ang.util.Utils
+import kotlinx.android.synthetic.main.activity_logcat.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -19,24 +20,22 @@ import java.io.IOException
 import java.util.LinkedHashSet
 
 class LogcatActivity : BaseActivity() {
-    private lateinit var binding: ActivityLogcatBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityLogcatBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
+        setContentView(R.layout.activity_logcat)
 
         title = getString(R.string.title_logcat)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setBackgroundDrawable(ContextCompat.getDrawable(applicationContext,R.color.colorPrimary))
         logcat(false)
     }
 
     private fun logcat(shouldFlushLog: Boolean) {
 
         try {
-            binding.pbWaiting.visibility = View.VISIBLE
+            pb_waiting.visibility = View.VISIBLE
 
             GlobalScope.launch(Dispatchers.Default) {
                 if (shouldFlushLog) {
@@ -59,10 +58,10 @@ class LogcatActivity : BaseActivity() {
 //                val allText = bufferedReader.use(BufferedReader::readText)
                 val allText = process.inputStream.bufferedReader().use { it.readText() }
                 launch(Dispatchers.Main) {
-                    binding.tvLogcat.text = allText
-                    binding.tvLogcat.movementMethod = ScrollingMovementMethod()
-                    binding.pbWaiting.visibility = View.GONE
-                    Handler(Looper.getMainLooper()).post { binding.svLogcat.fullScroll(View.FOCUS_DOWN) }
+                    tv_logcat.text = allText
+                    tv_logcat.movementMethod = ScrollingMovementMethod()
+                    pb_waiting.visibility = View.GONE
+                    Handler(Looper.getMainLooper()).post { sv_logcat.fullScroll(View.FOCUS_DOWN) }
                 }
             }
         } catch (e: IOException) {
@@ -77,7 +76,7 @@ class LogcatActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.copy_all -> {
-            Utils.setClipboard(this, binding.tvLogcat.text.toString())
+            Utils.setClipboard(this, tv_logcat.text.toString())
             toast(R.string.toast_success)
             true
         }

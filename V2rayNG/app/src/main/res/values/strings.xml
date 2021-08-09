@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">v2rayNG</string>
+    <string name="app_name">Fly2G</string>
     <string name="app_widget_name">Switch</string>
     <string name="app_tile_name">Switch</string>
     <string name="app_tile_first_use">First use of this feature, please use the app to add server</string>
@@ -19,6 +19,7 @@
     <string name="toast_services_failure">Start Services Failure</string>
 
     <!--ServerActivity-->
+    <string name="title_services">Services</string>
     <string name="title_server">Configuration file</string>
     <string name="menu_item_add_config">Add config</string>
     <string name="menu_item_save_config">Save config</string>
@@ -147,7 +148,9 @@
     <string name="donate_item_click">Donate</string>
     <string name="donate_item_paypal">Paypal</string>
 
+    <string name="title_about">About</string>
     <string name="title_logcat">Logcat</string>
+    <string name="title_glist">G List</string>
     <string name="logcat_copy">Copy</string>
     <string name="logcat_delete">Delete</string>
     <string name="title_export_all">Export non-custom configs to clipboard</string>
@@ -156,6 +159,10 @@
     <string name="sub_setting_url">url</string>
     <string name="title_sub_update">Update subscription</string>
     <string name="title_ping_all_server">Tcping all configuration</string>
+    <string name="title_real_ping_all_server">Real test all servers</string>
+    <string name="title_retest_invalid_servers">Re-test invalid servers</string>
+    <string name="title_remove_invalid_servers">Remove invalid servers</string>
+    <string name="title_sort_servers_by_speed">Sort servers by speed</string>
 
     <string name="tasker_start_service">Start Service</string>
     <string name="tasker_setting_confirm">Confirm</string>
@@ -205,5 +212,7 @@
         <item>VPN</item>
         <item>Proxy only</item>
     </string-array>
+
+    <string name="update_free_servers">Update free servers now?</string>
 
 </resources>

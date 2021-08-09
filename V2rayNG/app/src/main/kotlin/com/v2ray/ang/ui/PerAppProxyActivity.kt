@@ -15,17 +15,18 @@ import android.view.MenuItem
 import android.view.View
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
-import com.v2ray.ang.R
+import com.v2ray.ang.fly.R
 import com.v2ray.ang.util.AppManagerUtil
+import kotlinx.android.synthetic.main.activity_bypass_list.*
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import java.text.Collator
 import java.util.*
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContextCompat
 import com.v2ray.ang.AppConfig
 import com.v2ray.ang.AppConfig.ANG_PACKAGE
-import com.v2ray.ang.databinding.ActivityBypassListBinding
 import com.v2ray.ang.dto.AppInfo
 import com.v2ray.ang.extension.toast
 import com.v2ray.ang.extension.v2RayApplication
@@ -36,7 +37,6 @@ import kotlinx.coroutines.launch
 import java.net.URL
 
 class PerAppProxyActivity : BaseActivity() {
-    private lateinit var binding: ActivityBypassListBinding
 
     private var adapter: PerAppProxyAdapter? = null
     private var appsAll: List<AppInfo>? = null
@@ -44,14 +44,13 @@ class PerAppProxyActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityBypassListBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
+        setContentView(R.layout.activity_bypass_list)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setBackgroundDrawable(ContextCompat.getDrawable(applicationContext,R.color.colorPrimary))
 
         val dividerItemDecoration = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
-        binding.recyclerView.addItemDecoration(dividerItemDecoration)
+        recycler_view.addItemDecoration(dividerItemDecoration)
 
         val blacklist = defaultSharedPreferences.getStringSet(AppConfig.PREF_PER_APP_PROXY_SET, null)
 
@@ -93,20 +92,20 @@ class PerAppProxyActivity : BaseActivity() {
                 .subscribe {
                     appsAll = it
                     adapter = PerAppProxyAdapter(this, it, blacklist)
-                    binding.recyclerView.adapter = adapter
-                    binding.pbWaiting.visibility = View.GONE
+                    recycler_view.adapter = adapter
+                    pb_waiting.visibility = View.GONE
                 }
 
-        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        recycler_view.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             var dst = 0
             val threshold = resources.getDimensionPixelSize(R.dimen.bypass_list_header_height) * 3
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 dst += dy
                 if (dst > threshold) {
-                    binding.headerView.hide()
+                    header_view.hide()
                     dst = 0
                 } else if (dst < -20) {
-                    binding.headerView.show()
+                    header_view.show()
                     dst = 0
                 }
             }
@@ -142,23 +141,23 @@ class PerAppProxyActivity : BaseActivity() {
             }
         })
 
-        binding.switchPerAppProxy.setOnCheckedChangeListener { _, isChecked ->
+        switch_per_app_proxy.setOnCheckedChangeListener { _, isChecked ->
             defaultSharedPreferences.edit().putBoolean(AppConfig.PREF_PER_APP_PROXY, isChecked).apply()
         }
-        binding.switchPerAppProxy.isChecked = defaultSharedPreferences.getBoolean(AppConfig.PREF_PER_APP_PROXY, false)
+        switch_per_app_proxy.isChecked = defaultSharedPreferences.getBoolean(AppConfig.PREF_PER_APP_PROXY, false)
 
-        binding.switchBypassApps.setOnCheckedChangeListener { _, isChecked ->
+        switch_bypass_apps.setOnCheckedChangeListener { _, isChecked ->
             defaultSharedPreferences.edit().putBoolean(AppConfig.PREF_BYPASS_APPS, isChecked).apply()
         }
-        binding.switchBypassApps.isChecked = defaultSharedPreferences.getBoolean(AppConfig.PREF_BYPASS_APPS, false)
+        switch_bypass_apps.isChecked = defaultSharedPreferences.getBoolean(AppConfig.PREF_BYPASS_APPS, false)
 
-        binding.etSearch.setOnEditorActionListener { v, actionId, _ ->
+        et_search.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 //hide
                 var imm: InputMethodManager = v.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS)
 
-                val key = v.text.toString().uppercase()
+                val key = v.text.toString().toUpperCase()
                 val apps = ArrayList<AppInfo>()
                 if (TextUtils.isEmpty(key)) {
                     appsAll?.forEach {
@@ -166,13 +165,13 @@ class PerAppProxyActivity : BaseActivity() {
                     }
                 } else {
                     appsAll?.forEach {
-                        if (it.appName.uppercase().indexOf(key) >= 0) {
+                        if (it.appName.toUpperCase().indexOf(key) >= 0) {
                             apps.add(it)
                         }
                     }
                 }
                 adapter = PerAppProxyAdapter(this, apps, adapter?.blacklist)
-                binding.recyclerView.adapter = adapter
+                recycler_view.adapter = adapter
                 adapter?.notifyDataSetChanged()
                 true
             } else {
@@ -250,7 +249,7 @@ class PerAppProxyActivity : BaseActivity() {
 
             adapter?.blacklist!!.clear()
 
-            if (binding.switchBypassApps.isChecked) {
+            if (switch_bypass_apps.isChecked) {
                 adapter?.let {
                     it.apps.forEach block@{
                         val packageName = it.packageName

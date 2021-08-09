@@ -20,7 +20,7 @@ import android.util.Patterns
 import android.webkit.URLUtil
 import com.tencent.mmkv.MMKV
 import com.v2ray.ang.AppConfig
-import com.v2ray.ang.R
+import com.v2ray.ang.fly.R
 import com.v2ray.ang.extension.responseLength
 import com.v2ray.ang.extension.toast
 import com.v2ray.ang.service.V2RayServiceManager
@@ -349,6 +349,48 @@ object Utils {
             // library exception, eg sumsung
             Log.d(AppConfig.ANG_PACKAGE,"testConnection Exception: "+Log.getStackTraceString(e))
             result = context.getString(R.string.connection_test_error, e.message)
+        } finally {
+            conn?.disconnect()
+        }
+
+        return result
+    }
+
+    fun testConnection2(context: Context, port: Int): Long {
+        var result: Long
+        var conn: HttpURLConnection? = null
+
+        try {
+            val url = URL("https",
+                "www.google.com",
+                "/generate_204")
+
+            conn = url.openConnection(
+                    Proxy(Proxy.Type.HTTP,
+                            InetSocketAddress("127.0.0.1", port + 1))) as HttpURLConnection
+            conn.connectTimeout = 20000
+            conn.readTimeout = 20000
+            conn.setRequestProperty("Connection", "close")
+            conn.instanceFollowRedirects = false
+            conn.useCaches = false
+
+            val start = SystemClock.elapsedRealtime()
+            val code = conn.responseCode
+            val elapsed = SystemClock.elapsedRealtime() - start
+
+            if (code == 204 || code == 200 && conn.responseLength == 0L) {
+                result = elapsed as Long
+            } else {
+                throw IOException(context.getString(R.string.connection_test_error_status_code, code))
+            }
+        } catch (e: IOException) {
+            // network exception
+            Log.d(AppConfig.ANG_PACKAGE,"testConnection IOException: "+Log.getStackTraceString(e))
+            result = -1L
+        } catch (e: Exception) {
+            // library exception, eg sumsung
+            Log.d(AppConfig.ANG_PACKAGE,"testConnection Exception: "+Log.getStackTraceString(e))
+            result = -1L
         } finally {
             conn?.disconnect()
         }

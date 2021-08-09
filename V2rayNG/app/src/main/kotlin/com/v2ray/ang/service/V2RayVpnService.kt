@@ -12,11 +12,12 @@ import androidx.annotation.RequiresApi
 import android.util.Log
 import com.tencent.mmkv.MMKV
 import com.v2ray.ang.AppConfig
-import com.v2ray.ang.R
+import com.v2ray.ang.fly.R
 import com.v2ray.ang.util.MmkvManager
 import com.v2ray.ang.util.Utils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 import java.lang.ref.SoftReference
@@ -186,7 +187,7 @@ class V2RayVpnService : VpnService(), ServiceControl {
         GlobalScope.launch(Dispatchers.IO) {
             var tries = 0
             while (true) try {
-                Thread.sleep(1000L shl tries)
+                delay(1000L shl tries)
                 Log.d(packageName, "sendFd tries: $tries")
                 LocalSocket().use { localSocket ->
                     localSocket.connect(LocalSocketAddress(path, LocalSocketAddress.Namespace.FILESYSTEM))

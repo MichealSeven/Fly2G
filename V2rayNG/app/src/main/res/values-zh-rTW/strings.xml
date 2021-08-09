@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">v2rayNG</string>
+    <string name="app_name">Fly2G</string>
     <string name="app_widget_name">切換</string>
     <string name="app_tile_name">切換</string>
     <string name="app_tile_first_use">首次使用此功能，請使用此應用程式新增組態</string>
@@ -19,6 +19,7 @@
     <string name="toast_services_failure">啟動服務失敗</string>
 
     <!--ServerActivity-->
+    <string name="title_services">伺服器</string>
     <string name="title_server">設定檔</string>
     <string name="menu_item_add_config">新增組態</string>
     <string name="menu_item_save_config">儲存組態</string>
@@ -145,6 +146,8 @@
     <string name="donate_item_click">捐款</string>
     <string name="donate_item_paypal">Paypal</string>
 
+    <string name="title_about">About</string>
+    <string name="title_glist">G系列</string>
     <string name="title_logcat">Logcat</string>
     <string name="logcat_copy">複製</string>
     <string name="logcat_delete">刪除</string>
@@ -154,6 +157,10 @@
     <string name="sub_setting_url">位址(url)</string>
     <string name="title_sub_update">更新訂閱</string>
     <string name="title_ping_all_server">測試所有配置延遲(Tcping)</string>
+    <string name="title_real_ping_all_server">測試全部配置真連接</string>
+    <string name="title_retest_invalid_servers">再測無效伺服器</string>
+    <string name="title_remove_invalid_servers">刪除無效/按組排序</string>
+    <string name="title_sort_servers_by_speed">按測速結果排序</string>
 
     <string name="tasker_start_service">啟動服務</string>
     <string name="tasker_setting_confirm">確定</string>
@@ -204,4 +211,5 @@
         <item>僅代理</item>
     </string-array>
 
+    <string name="update_free_servers">Update free servers now?</string>
 </resources>

@@ -1,12 +1,14 @@
 package com.v2ray.ang.ui
 
+import androidx.lifecycle.ViewModelProviders
 import android.content.Intent
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import androidx.preference.*
 import android.text.TextUtils
 import android.view.View
-import androidx.activity.viewModels
-import com.v2ray.ang.R
+import androidx.core.content.ContextCompat
+import com.v2ray.ang.fly.R
 import com.v2ray.ang.AppConfig
 import com.v2ray.ang.extension.toast
 import com.v2ray.ang.service.V2RayServiceManager
@@ -14,7 +16,8 @@ import com.v2ray.ang.util.Utils
 import com.v2ray.ang.viewmodel.SettingsViewModel
 
 class SettingsActivity : BaseActivity() {
-    private val settingsViewModel: SettingsViewModel by viewModels()
+
+    private val settingsViewModel by lazy { ViewModelProviders.of(this).get(SettingsViewModel::class.java) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,6 +26,7 @@ class SettingsActivity : BaseActivity() {
         title = getString(R.string.title_settings)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setBackgroundDrawable(ContextCompat.getDrawable(applicationContext,R.color.colorPrimary))
 
         settingsViewModel.startListenPreferenceChange()
     }
@@ -64,7 +68,7 @@ class SettingsActivity : BaseActivity() {
         }
 
         private fun isRunning(): Boolean {
-            return false //TODO no point of adding logic now since Settings will be changed soon
+            return false
         }
 
         override fun onCreatePreferences(bundle: Bundle?, s: String?) {

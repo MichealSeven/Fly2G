@@ -7,7 +7,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
-import com.v2ray.ang.R
+import com.v2ray.ang.fly.R
 import com.v2ray.ang.AppConfig
 import com.v2ray.ang.service.V2RayServiceManager
 import com.v2ray.ang.util.Utils

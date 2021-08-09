@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">v2rayNG</string>
+    <string name="app_name">Fly2G</string>
     <string name="app_widget_name">开关</string>
     <string name="app_tile_name">开关</string>
     <string name="app_tile_first_use">初次使用此功能请先用APP添加配置</string>
@@ -19,6 +19,7 @@
     <string name="toast_services_failure">启动服务失败</string>
 
     <!--ServerActivity-->
+    <string name="title_services">服务器</string>
     <string name="title_server">配置文件</string>
     <string name="menu_item_add_config">添加配置</string>
     <string name="menu_item_save_config">保存配置</string>
@@ -144,7 +145,9 @@
     <string name="donate_item_click">捐赠</string>
     <string name="donate_item_paypal">Paypal</string>
 
+    <string name="title_about">关于</string>
     <string name="title_logcat">Logcat</string>
+    <string name="title_glist">G系列</string>
     <string name="logcat_copy">复制</string>
     <string name="logcat_delete">删除</string>
     <string name="title_export_all">导出全部(非自定义)配置至剪贴板</string>
@@ -153,6 +156,10 @@
     <string name="sub_setting_url">地址(url)</string>
     <string name="title_sub_update">更新订阅</string>
     <string name="title_ping_all_server">测试所有配置延迟(Tcping)</string>
+    <string name="title_real_ping_all_server">测试全部配置真连接</string>
+    <string name="title_retest_invalid_servers">再测无效服务器</string>
+    <string name="title_remove_invalid_servers">删除无效/按组排序</string>
+    <string name="title_sort_servers_by_speed">按测速结果排序</string>
 
     <string name="tasker_start_service">启动服务</string>
     <string name="tasker_setting_confirm">确定</string>
@@ -202,5 +209,7 @@
         <item>VPN</item>
         <item>仅代理</item>
     </string-array>
+
+    <string name="update_free_servers">立即更新免费服务器？ (免费服务器均来自网络分享，请小心使用！)</string>
 
 </resources>

@@ -1,5 +1,6 @@
 package com.v2ray.ang.util
 
+import android.util.Log
 import com.google.gson.Gson
 import com.tencent.mmkv.MMKV
 import com.v2ray.ang.dto.ServerAffiliationInfo
@@ -14,6 +15,7 @@ object MmkvManager {
     const val ID_SUB = "SUB"
     const val ID_SETTING = "SETTING"
     const val KEY_SELECTED_SERVER = "SELECTED_SERVER"
+    const val KEY_SELECTED_TEST_SERVER = "SELECTED_TEST_SERVER"
     const val KEY_ANG_CONFIGS = "ANG_CONFIGS"
 
     private val mainStorage by lazy { MMKV.mmkvWithID(ID_MAIN, MMKV.MULTI_PROCESS_MODE) }
@@ -28,6 +30,23 @@ object MmkvManager {
         } else {
             Gson().fromJson(json, Array<String>::class.java).toMutableList()
         }
+    }
+
+    fun sortServerList() {
+        val serverAffList : ArrayList<ServerAffiliationInfo> = ArrayList()
+        serverAffStorage?.allKeys()?.forEach { key ->
+            decodeServerAffiliationInfo(key)?.let { aff ->
+                serverAffList.add(aff)
+                //Log.e("sortServerList1", aff.guid + " => " + aff.getTestDelayString())
+            }
+        }
+        serverAffList.sortBy { it.testDelayMillis }
+        val serverList : ArrayList<String> = ArrayList()
+        serverAffList.forEach { aff ->
+            //Log.e("sortServerList2", aff.guid + " => " + aff.getTestDelayString())
+            serverList.add(aff.guid)
+        }
+        mainStorage?.encode(KEY_ANG_CONFIGS, Gson().toJson(serverList))
     }
 
     fun decodeServerConfig(guid: String): ServerConfig? {
@@ -103,6 +122,7 @@ object MmkvManager {
         }
         val aff = decodeServerAffiliationInfo(guid) ?: ServerAffiliationInfo()
         aff.testDelayMillis = testResult
+        aff.guid = guid
         serverAffStorage?.encode(guid, Gson().toJson(aff))
     }
 

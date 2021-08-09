@@ -6,7 +6,7 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import java.util.ArrayList
-import com.v2ray.ang.R
+import com.v2ray.ang.fly.R
 import android.content.Intent
 import android.text.TextUtils
 import android.view.Menu
@@ -14,12 +14,10 @@ import android.view.MenuItem
 import com.google.zxing.WriterException
 import com.tencent.mmkv.MMKV
 import com.v2ray.ang.AppConfig
-import com.v2ray.ang.databinding.ActivityTaskerBinding
 import com.v2ray.ang.util.MmkvManager
+import kotlinx.android.synthetic.main.activity_tasker.*
 
 class TaskerActivity : BaseActivity() {
-    private lateinit var binding: ActivityTaskerBinding
-
     private var listview: ListView? = null
     private var lstData: ArrayList<String> = ArrayList()
     private var lstGuid: ArrayList<String> = ArrayList()
@@ -28,9 +26,7 @@ class TaskerActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityTaskerBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
+        setContentView(R.layout.activity_tasker)
 
         //add def value
         lstData.add("Default")
@@ -59,7 +55,7 @@ class TaskerActivity : BaseActivity() {
             if (switch == null || TextUtils.isEmpty(guid)) {
                 return
             } else {
-                binding.switchStartService.isChecked = switch
+                switch_start_service.isChecked = switch
                 val pos = lstGuid.indexOf(guid.toString())
                 if (pos >= 0) {
                     listview?.setItemChecked(pos, true)
@@ -78,12 +74,12 @@ class TaskerActivity : BaseActivity() {
         }
 
         val extraBundle = Bundle()
-        extraBundle.putBoolean(AppConfig.TASKER_EXTRA_BUNDLE_SWITCH, binding.switchStartService.isChecked)
+        extraBundle.putBoolean(AppConfig.TASKER_EXTRA_BUNDLE_SWITCH, switch_start_service.isChecked)
         extraBundle.putString(AppConfig.TASKER_EXTRA_BUNDLE_GUID, lstGuid[position])
         val intent = Intent()
 
         val remarks = lstData[position]
-        val blurb = if (binding.switchStartService.isChecked) {
+        val blurb = if (switch_start_service.isChecked) {
             "Start $remarks"
         } else {
             "Stop $remarks"

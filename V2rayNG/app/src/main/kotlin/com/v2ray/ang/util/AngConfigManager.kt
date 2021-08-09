@@ -11,7 +11,7 @@ import com.v2ray.ang.AppConfig
 import com.v2ray.ang.AppConfig.ANG_CONFIG
 import com.v2ray.ang.AppConfig.HTTPS_PROTOCOL
 import com.v2ray.ang.AppConfig.HTTP_PROTOCOL
-import com.v2ray.ang.R
+import com.v2ray.ang.fly.R
 import com.v2ray.ang.dto.*
 import com.v2ray.ang.dto.V2rayConfig.Companion.DEFAULT_SECURITY
 import com.v2ray.ang.dto.V2rayConfig.Companion.TLS
@@ -245,7 +245,7 @@ object AngConfigManager {
                     server.address = match.groupValues[3].removeSurrounding("[", "]")
                     server.port = match.groupValues[4].toInt()
                     server.password = match.groupValues[2]
-                    server.method = match.groupValues[1].lowercase()
+                    server.method = match.groupValues[1].toLowerCase()
                 }
             } else if (str.startsWith(EConfigType.SOCKS.protocolScheme)) {
                 var result = str.replace(EConfigType.SOCKS.protocolScheme, "")
@@ -276,7 +276,7 @@ object AngConfigManager {
                     server.address = match.groupValues[3].removeSurrounding("[", "]")
                     server.port = match.groupValues[4].toInt()
                     val socksUsersBean = V2rayConfig.OutboundBean.OutSettingsBean.ServersBean.SocksUsersBean()
-                    socksUsersBean.user = match.groupValues[1].lowercase()
+                    socksUsersBean.user = match.groupValues[1].toLowerCase()
                     socksUsersBean.pass = match.groupValues[2]
                     server.users = listOf(socksUsersBean)
                 }

@@ -1,17 +1,21 @@
 package com.v2ray.ang.ui
 
+
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentStatePagerAdapter
 
-class FragmentAdapter(fragmentActivity: FragmentActivity, private val mFragments: List<Fragment>) :
-        FragmentStateAdapter(fragmentActivity) {
+class FragmentAdapter(fm: FragmentManager, private val mFragments: List<Fragment>, private val mTitles: List<String>) : FragmentStatePagerAdapter(fm) {
 
-    override fun createFragment(position: Int): Fragment {
+    override fun getItem(position: Int): Fragment {
         return mFragments[position]
     }
 
-    override fun getItemCount(): Int {
+    override fun getCount(): Int {
         return mFragments.size
+    }
+
+    override fun getPageTitle(position: Int): CharSequence? {
+        return mTitles[position]
     }
 }

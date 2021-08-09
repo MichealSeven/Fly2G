@@ -7,18 +7,26 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Looper
+import android.os.SystemClock
 import android.util.Log
 import com.google.gson.Gson
 import com.tencent.mmkv.MMKV
 import com.v2ray.ang.AngApplication
 import com.v2ray.ang.AppConfig
-import com.v2ray.ang.R
+import com.v2ray.ang.fly.R
 import com.v2ray.ang.dto.EConfigType
 import com.v2ray.ang.dto.ServerConfig
 import com.v2ray.ang.dto.V2rayConfig
 import com.v2ray.ang.extension.toast
+import com.v2ray.ang.service.V2RayServiceManager
+import com.v2ray.ang.service.V2RayTestServiceManager
+import com.v2ray.ang.ui.MainActivity
+import com.v2ray.ang.ui.MainRecyclerAdapter
+import com.v2ray.ang.ui.ServerActivity
 import com.v2ray.ang.util.*
 import com.v2ray.ang.util.MmkvManager.KEY_ANG_CONFIGS
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -33,6 +41,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val isRunning by lazy { MutableLiveData<Boolean>() }
     val updateListAction by lazy { MutableLiveData<Int>() }
     val updateTestResultAction by lazy { MutableLiveData<String>() }
+
+    var mainActivity : MainActivity? = null
+    var mainAdapter : MainRecyclerAdapter? = null
 
     private val tcpingTestScope by lazy { CoroutineScope(Dispatchers.IO) }
 
@@ -92,7 +103,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         Utils.closeAllTcpSockets()
         MmkvManager.clearAllTestDelayResults()
         updateListAction.value = -1 // update all
-
         getApplication<AngApplication>().toast(R.string.connection_test_testing)
         for (guid in serverList) {
             serversCache.getOrElse(guid, { MmkvManager.decodeServerConfig(guid) })?.getProxyOutbound()?.let { outbound ->
@@ -111,14 +121,98 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun testAllRealPing(){
+        Utils.closeAllTcpSockets()
+        MmkvManager.clearAllTestDelayResults()
+        updateListAction.value = -1
+        val realSelected = mainStorage?.decodeString(MmkvManager.KEY_SELECTED_SERVER)
+        GlobalScope.launch {
+            //Looper.prepare()
+            //V2RayTestServiceManager.stopV2rayPoint()
+            for (guid in serverList){
+                serversCache.getOrElse(guid, { MmkvManager.decodeServerConfig(guid) })?.getProxyOutbound()?.let { outbound ->
+                    val serverAddress = outbound.getServerAddress()
+                    val serverPort = outbound.getServerPort()
+                    if (serverAddress != null && serverPort != null) {
+                        launch(Dispatchers.Main) {
+                            //getApplication<AngApplication>().toast("Testing......")
+                            mainStorage?.encode(MmkvManager.KEY_SELECTED_SERVER, guid)
+                            mainAdapter!!.notifyItemChanged(mainActivity!!.mainViewModel.serverList.indexOf(guid))
+                            mainActivity!!.recycler_view.smoothScrollToPosition(mainActivity!!.mainViewModel.serverList.indexOf(guid))
+                        }
+                        delay(500L)
+                        launch(Dispatchers.Main){
+                            V2RayServiceManager.startV2Ray(mainActivity!!)
+                            //V2RayTestServiceManager.startV2Ray(mainActivity!!)
+                        }
+                        delay(3000L)
+                        val testResult = Utils.testConnection2(getApplication(), 10808)
+                        launch(Dispatchers.Main) {
+                            MmkvManager.encodeServerTestDelayMillis(guid, testResult)
+                            updateListAction.value = serverList.indexOf(guid)
+                        }
+                        delay(500L)
+                        launch(Dispatchers.Main){
+                            V2RayServiceManager.stopV2rayPoint()
+                            //V2RayTestServiceManager.stopV2rayPoint()
+                        }
+                        delay(500L)
+                    }
+                }
+            }
+            launch(Dispatchers.Main) {
+                getApplication<AngApplication>().toast("Test Completed")
+            }
+        }
+    }
+
+    fun threadDelay(millis : Long){
+        val start = SystemClock.elapsedRealtime()
+        Thread.sleep(0)
+        while ((SystemClock.elapsedRealtime() - start) < millis){
+            Thread.sleep(0)
+        }
+    }
+
     fun testCurrentServerRealPing() {
-        val socksPort = 10808//Utils.parseInt(defaultDPreference.getPrefString(SettingsActivity.PREF_SOCKS_PORT, "10808"))
+        val socksPort = 10808 //Utils.parseInt(defaultDPreference.getPrefString(SettingsActivity.PREF_SOCKS_PORT, "10808"))
         GlobalScope.launch(Dispatchers.IO) {
             val result = Utils.testConnection(getApplication(), socksPort)
             launch(Dispatchers.Main) {
                 updateTestResultAction.value = result
             }
         }
+    }
+
+    fun removeInvalidServers() {
+        serversCache.clear()
+        GlobalScope.launch(Dispatchers.Default) {
+            serverList.forEach { guid ->
+                var sInfo = MmkvManager.decodeServerAffiliationInfo(guid)
+                if (sInfo != null && sInfo!!.testDelayMillis == -1L){
+                    launch(Dispatchers.Main) {
+                        try {
+                            MmkvManager.removeServer(guid)
+                            Log.e("removeServer", guid.toString())
+                        }catch (ex : Exception){
+                            ex.printStackTrace()
+                        }
+                    }
+                }
+            }
+            delay(500L)
+            launch(Dispatchers.Main) {
+                MmkvManager.sortServerList()
+                reloadServerList()
+                mainActivity!!.recycler_view.smoothScrollToPosition(0)
+            }
+        }
+    }
+
+    fun sortServerList() {
+        MmkvManager.sortServerList()
+        reloadServerList()
+        mainActivity!!.recycler_view.smoothScrollToPosition(0)
     }
 
     private val mMsgReceiver = object : BroadcastReceiver() {

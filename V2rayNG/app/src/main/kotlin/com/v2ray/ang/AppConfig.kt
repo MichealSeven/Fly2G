@@ -5,7 +5,7 @@ package com.v2ray.ang
  * App Config Const
  */
 object AppConfig {
-    const val ANG_PACKAGE = "com.v2ray.ang"
+    const val ANG_PACKAGE = "com.v2ray.ang.fly"
 
     // legacy
     const val ANG_CONFIG = "ang_config"
@@ -62,9 +62,16 @@ object AppConfig {
 
     const val androidpackagenamelistUrl = "https://raw.githubusercontent.com/2dust/androidpackagenamelist/master/proxy.txt"
     const val v2rayCustomRoutingListUrl = "https://raw.githubusercontent.com/2dust/v2rayCustomRoutingList/master/"
-    const val v2rayNGIssues = "https://github.com/2dust/v2rayNG/issues"
+    const val v2rayNGIssues = "https://github.com/MichealSeven/Fly2G/issues"
     const val v2rayNGWikiMode = "https://github.com/2dust/v2rayNG/wiki/Mode"
     const val promotionUrl = "https://1.2345345.xyz/ads.html"
+
+    const val gListUrl = "https://app.gettr.com/"
+    const val gGtvUrl = "https://gtv.org/"
+    const val gGnewsUrl = "https://gnews.org/"
+    const val gGettrUrl = "https://app.gettr.com/"
+
+    const val freeSubDomain = "https://www.yourfreesub.com/"
 
     const val DNS_AGENT = "1.1.1.1"
     const val DNS_DIRECT = "223.5.5.5"

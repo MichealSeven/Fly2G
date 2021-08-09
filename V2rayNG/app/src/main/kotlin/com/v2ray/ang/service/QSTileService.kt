@@ -10,7 +10,7 @@ import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import com.v2ray.ang.AppConfig
-import com.v2ray.ang.R
+import com.v2ray.ang.fly.R
 import com.v2ray.ang.util.MessageUtil
 import com.v2ray.ang.util.Utils
 import java.lang.ref.SoftReference

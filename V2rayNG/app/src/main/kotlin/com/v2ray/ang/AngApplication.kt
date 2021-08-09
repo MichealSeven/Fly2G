@@ -3,6 +3,7 @@ package com.v2ray.ang
 import androidx.multidex.MultiDexApplication
 import androidx.preference.PreferenceManager
 import com.tencent.mmkv.MMKV
+import com.v2ray.ang.fly.BuildConfig.*
 
 class AngApplication : MultiDexApplication() {
     companion object {
@@ -19,9 +20,9 @@ class AngApplication : MultiDexApplication() {
 //        LeakCanary.install(this)
 
         val defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        firstRun = defaultSharedPreferences.getInt(PREF_LAST_VERSION, 0) != BuildConfig.VERSION_CODE
+        firstRun = defaultSharedPreferences.getInt(PREF_LAST_VERSION, 0) != VERSION_CODE
         if (firstRun)
-            defaultSharedPreferences.edit().putInt(PREF_LAST_VERSION, BuildConfig.VERSION_CODE).apply()
+            defaultSharedPreferences.edit().putInt(PREF_LAST_VERSION, VERSION_CODE).apply()
 
         //Logger.init().logLevel(if (BuildConfig.DEBUG) LogLevel.FULL else LogLevel.NONE)
         MMKV.initialize(this)

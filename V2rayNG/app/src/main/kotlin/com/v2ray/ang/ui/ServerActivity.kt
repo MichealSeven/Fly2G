@@ -8,8 +8,9 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.core.content.ContextCompat
 import com.tencent.mmkv.MMKV
-import com.v2ray.ang.R
+import com.v2ray.ang.fly.R
 import com.v2ray.ang.dto.EConfigType
 import com.v2ray.ang.dto.ServerConfig
 import com.v2ray.ang.dto.V2rayConfig
@@ -115,6 +116,7 @@ class ServerActivity : BaseActivity() {
             clearServer()
         }
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setBackgroundDrawable(ContextCompat.getDrawable(applicationContext,R.color.colorPrimary))
     }
 
     /**
@@ -123,41 +125,44 @@ class ServerActivity : BaseActivity() {
     private fun bindingServer(config: ServerConfig): Boolean {
         val outbound = config.getProxyOutbound() ?: return false
         val streamSetting = config.outboundBean?.streamSettings ?: return false
-
-        et_remarks.text = Utils.getEditable(config.remarks)
-        et_address.text = Utils.getEditable(outbound.getServerAddress().orEmpty())
-        et_port.text = Utils.getEditable(outbound.getServerPort()?.toString() ?: DEFAULT_PORT.toString())
-        et_id.text = Utils.getEditable(outbound.getPassword().orEmpty())
-        et_alterId?.text = Utils.getEditable(outbound.settings?.vnext?.get(0)?.users?.get(0)?.alterId.toString())
-        if (config.configType == EConfigType.SOCKS) {
-            et_security.text = Utils.getEditable(outbound.settings?.servers?.get(0)?.users?.get(0)?.user.orEmpty())
-        } else if (config.configType == EConfigType.VLESS) {
-            et_security.text = Utils.getEditable(outbound.getSecurityEncryption().orEmpty())
-            val flow = Utils.arrayFind(flows, outbound.settings?.vnext?.get(0)?.users?.get(0)?.flow.orEmpty())
-            if (flow >= 0) {
-                //sp_flow.setSelection(flow)
-            }
-        }
-        val securityEncryptions = if (config.configType == EConfigType.SHADOWSOCKS) shadowsocksSecuritys else securitys
-        val security = Utils.arrayFind(securityEncryptions, outbound.getSecurityEncryption().orEmpty())
-        if (security >= 0) {
-            sp_security?.setSelection(security)
-        }
-
-        val streamSecurity = Utils.arrayFind(streamSecuritys, streamSetting.security)
-        if (streamSecurity >= 0) {
-            sp_stream_security?.setSelection(streamSecurity)
-            (streamSetting.tlsSettings?: streamSetting.xtlsSettings)?.let { tlsSetting ->
-                val allowinsecure = Utils.arrayFind(allowinsecures, tlsSetting.allowInsecure.toString())
-                if (allowinsecure >= 0) {
-                    sp_allow_insecure?.setSelection(allowinsecure)
+        try {
+            et_remarks.text = Utils.getEditable(config.remarks)
+            et_address.text = Utils.getEditable(outbound.getServerAddress().orEmpty())
+            et_port.text = Utils.getEditable(outbound.getServerPort()?.toString() ?: DEFAULT_PORT.toString())
+            et_id.text = Utils.getEditable(outbound.getPassword().orEmpty())
+            et_alterId?.text = Utils.getEditable(outbound.settings?.vnext?.get(0)?.users?.get(0)?.alterId.toString())
+            if (config.configType == EConfigType.SOCKS) {
+                et_security.text = Utils.getEditable(outbound.settings?.servers?.get(0)?.users?.get(0)?.user.orEmpty())
+            } else if (config.configType == EConfigType.VLESS) {
+                et_security.text = Utils.getEditable(outbound.getSecurityEncryption().orEmpty())
+                val flow = Utils.arrayFind(flows, outbound.settings?.vnext?.get(0)?.users?.get(0)?.flow.orEmpty())
+                if (flow >= 0) {
+                    //sp_flow.setSelection(flow)
                 }
-                et_request_host.text = Utils.getEditable(tlsSetting.serverName)
             }
-        }
-        val network = Utils.arrayFind(networks, streamSetting.network)
-        if (network >= 0) {
-            sp_network?.setSelection(network)
+            val securityEncryptions = if (config.configType == EConfigType.SHADOWSOCKS) shadowsocksSecuritys else securitys
+            val security = Utils.arrayFind(securityEncryptions, outbound.getSecurityEncryption().orEmpty())
+            if (security >= 0) {
+                sp_security?.setSelection(security)
+            }
+
+            val streamSecurity = Utils.arrayFind(streamSecuritys, streamSetting.security)
+            if (streamSecurity >= 0) {
+                sp_stream_security?.setSelection(streamSecurity)
+                (streamSetting.tlsSettings?: streamSetting.xtlsSettings)?.let { tlsSetting ->
+                    val allowinsecure = Utils.arrayFind(allowinsecures, tlsSetting.allowInsecure.toString())
+                    if (allowinsecure >= 0) {
+                        sp_allow_insecure?.setSelection(allowinsecure)
+                    }
+                    et_request_host.text = Utils.getEditable(tlsSetting.serverName)
+                }
+            }
+            val network = Utils.arrayFind(networks, streamSetting.network)
+            if (network >= 0) {
+                sp_network?.setSelection(network)
+            }
+        } catch (ex : Exception){
+            return  false
         }
         return true
     }

@@ -1,6 +1,6 @@
 package com.v2ray.ang.ui
 
-import com.v2ray.ang.R
+import com.v2ray.ang.fly.R
 import com.v2ray.ang.util.Utils
 import android.os.Bundle
 import com.v2ray.ang.service.V2RayServiceManager

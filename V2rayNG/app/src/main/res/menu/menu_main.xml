@@ -2,6 +2,25 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:icon="@drawable/ic_glist_24"
+        android:title="@string/menu_item_add_config"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/open_gtv"
+                android:title="GTV"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/open_gnews"
+                android:title="GNews"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/open_gettr"
+                android:title="Gettr盖特"
+                app:showAsAction="never" />
+        </menu>
+    </item>
+    <item
         android:icon="@drawable/ic_add_white_24dp"
         android:title="@string/menu_item_add_config"
         app:showAsAction="always">
@@ -62,6 +81,27 @@
         android:icon="@drawable/ic_share_white_24dp"
         android:title="@string/title_ping_all_server"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/real_ping_all"
+        android:title="@string/title_real_ping_all_server"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/remove_invalid_servers"
+        android:title="@string/title_remove_invalid_servers"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/sort_servers_by_speed"
+        android:title="@string/title_sort_servers_by_speed"
+        app:showAsAction="never"/>
+    <!--
+    <item
+        android:id="@+id/retest_invalid_servers"
+        android:title="@string/title_retest_invalid_servers"
+        app:showAsAction="never"/>
+
+
+    -->
+
     <item
         android:id="@+id/sub_update"
         android:icon="@drawable/ic_subscriptions_white_24dp"

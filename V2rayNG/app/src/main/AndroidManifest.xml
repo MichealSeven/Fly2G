@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.v2ray.ang">
+    package="com.v2ray.ang.fly">
 
     <supports-screens
             android:anyDensity="true"
@@ -31,7 +31,7 @@
     <uses-sdk tools:overrideLibrary="com.blacksquircle.ui.editorkit, com.blacksquircle.ui.language.json, com.blacksquircle.ui.language.base"/>
 
     <application
-        android:name=".AngApplication"
+        android:name="com.v2ray.ang.AngApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -39,7 +39,7 @@
         android:extractNativeLibs="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ui.MainActivity"
+            android:name="com.v2ray.ang.ui.MainActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:launchMode="singleTask">
             <intent-filter>
@@ -59,31 +59,29 @@
                 android:resource="@xml/shortcuts" />
         </activity>
         <activity
-            android:name=".ui.ServerActivity"
+            android:name="com.v2ray.ang.ui.ServerActivity"
             android:windowSoftInputMode="stateUnchanged" />
         <activity
-            android:name=".ui.ServerCustomConfigActivity"
+            android:name="com.v2ray.ang.ui.ServerCustomConfigActivity"
             android:windowSoftInputMode="stateUnchanged" />
-        <activity android:name=".ui.SettingsActivity" />
-        <activity android:name=".ui.PerAppProxyActivity" />
-        <activity android:name=".ui.ScannerActivity" />
-<!--        <activity android:name=".InappBuyActivity" />-->
-        <activity android:name=".ui.LogcatActivity" />
+        <activity android:name="com.v2ray.ang.ui.SettingsActivity" />
+        <activity android:name="com.v2ray.ang.ui.PerAppProxyActivity" />
+        <activity android:name="com.v2ray.ang.ui.ScannerActivity" />
+        <activity android:name="com.v2ray.ang.ui.LogcatActivity" />
         <activity
-            android:name=".ui.RoutingSettingsActivity"
+            android:name="com.v2ray.ang.ui.RoutingSettingsActivity"
             android:windowSoftInputMode="stateUnchanged" />
-        <activity android:name=".ui.SubSettingActivity" />
-
-        <activity android:name=".ui.SubEditActivity" />
-        <activity android:name=".ui.ScScannerActivity" />
+        <activity android:name="com.v2ray.ang.ui.SubSettingActivity" />
+        <activity android:name="com.v2ray.ang.ui.SubEditActivity" />
+        <activity android:name="com.v2ray.ang.ui.ScScannerActivity" />
         <activity
-            android:name=".ui.ScSwitchActivity"
+            android:name="com.v2ray.ang.ui.ScSwitchActivity"
             android:excludeFromRecents="true"
             android:process=":RunSoLibV2RayDaemon"
             android:theme="@style/AppTheme.NoActionBar.Translucent" />
 
         <service
-            android:name=".service.V2RayVpnService"
+            android:name="com.v2ray.ang.service.V2RayVpnService"
             android:enabled="true"
             android:exported="false"
             android:label="@string/app_name"
@@ -97,13 +95,19 @@
                 android:value="true" />
         </service>
 
-        <service android:name=".service.V2RayProxyOnlyService"
+        <service android:name="com.v2ray.ang.service.V2RayProxyOnlyService"
                 android:exported="false"
                 android:label="@string/app_name"
                 android:process=":RunSoLibV2RayDaemon">
         </service>
 
-        <receiver android:name=".receiver.WidgetProvider"
+        <service android:name="com.v2ray.ang.service.V2RayTestProxyOnlyService"
+            android:exported="false"
+            android:label="@string/app_name"
+            android:process=":RunSoLibV2RayDaemon">
+        </service>
+
+        <receiver android:name="com.v2ray.ang.receiver.WidgetProvider"
                 android:process=":RunSoLibV2RayDaemon">
             <meta-data
                     android:name="android.appwidget.provider"
@@ -116,7 +120,7 @@
         </receiver>
 
         <service
-                android:name=".service.QSTileService"
+                android:name="com.v2ray.ang.service.QSTileService"
                 android:icon="@drawable/ic_v"
                 android:label="@string/app_tile_name"
                 android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
@@ -127,7 +131,7 @@
         </service>
         <!-- =====================Tasker===================== -->
         <activity
-            android:name=".ui.TaskerActivity"
+            android:name="com.v2ray.ang.ui.TaskerActivity"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name">
             <intent-filter>
@@ -135,7 +139,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".receiver.TaskerReceiver"
+        <receiver android:name="com.v2ray.ang.receiver.TaskerReceiver"
                 android:process=":RunSoLibV2RayDaemon">
             <intent-filter>
                 <action android:name="com.twofortyfouram.locale.intent.action.FIRE_SETTING" />

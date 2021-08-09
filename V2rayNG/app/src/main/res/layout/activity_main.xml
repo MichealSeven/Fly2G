@@ -21,14 +21,12 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
+                android:background="@color/colorPrimary"
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
 
         </com.google.android.material.appbar.AppBarLayout>
 
-        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
@@ -55,10 +53,10 @@
                         android:id="@+id/layout_test"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/connection_test_height"
-                        android:background="@drawable/background_test_button"
-                        android:gravity="center|left"
+                        android:background="@color/colorPrimary"
                         android:clickable="true"
-                        android:focusable="true">
+                        android:focusable="true"
+                        android:gravity="center|left">
 
                         <TextView
                             android:id="@+id/tv_test_state"
@@ -87,18 +85,19 @@
                         android:id="@+id/fab"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
                         android:layout_alignParentEnd="true"
+                        android:layout_alignParentBottom="true"
                         android:layout_gravity="bottom|end"
-                        android:layout_marginBottom="16dp"
-                        android:layout_marginRight="16dp"
                         android:layout_marginLeft="16dp"
                         android:layout_marginTop="16dp"
-                        android:src="@drawable/ic_v_idle"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginBottom="16dp"
                         android:clickable="true"
                         android:focusable="true"
-                        app:layout_anchorGravity="bottom|right|end"
-                        android:nextFocusLeft="@+id/recycler_view" />
+                        android:nextFocusLeft="@+id/recycler_view"
+                        android:src="@drawable/ic_v_idle"
+                        app:backgroundTint="#33A7CA"
+                        app:layout_anchorGravity="bottom|right|end" />
 
                 </com.github.jorgecastilloprz.FABProgressCircle>
             </androidx.coordinatorlayout.widget.CoordinatorLayout>
